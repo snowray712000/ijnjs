@@ -2,19 +2,38 @@
 /// <reference path="../../jsdoc/linq.d.ts" />
 /// <reference path="SplitStringByRegex.js" />
 
-
 (function(root,undefined){
-  var Enumerable = getEnumerable()
+  /** @class */
+  var Enumerable = getLinqEnumerable()
 
-  function getEnumerable(){
+  // https://raw.githubusercontent.com/snowray712000/ijnjs/main/ijn-dialog-base.js
+  // https://raw.githubusercontent.com/snowray712000/ijnjs/main/ijn-dialog-base.css
+  // https://raw.githubusercontent.com/snowray712000/ijnjs/main/bible-version-dialog-picker.js
+  // https://raw.githubusercontent.com/snowray712000/ijnjs/main/SplitStringByRegex.js
+  function getSrd(){
+    if ( /127.0.0.1/i.test(location.host) ){
+      return '/static/ijnjs/'
+      return 'https://raw.githubusercontent.com/snowray712000/ijnjs/main/' // 也可以
+    }
+    if ( /localhost/i.test(location.host) ){
+      return 'https://raw.githubusercontent.com/snowray712000/ijnjs/main/'
+      // return 'http://127.0.0.1:5500/static/ijnjs/'
+    }
+
+    return '/NUI/static/ijnjs/'
+  }
+  /**
+   * @returns {Enumerable}
+   */
+  function getLinqEnumerable(){
     if ( typeof Enumerable === 'undefined' ){
       if ( typeof require === 'function' ){
         return require('linq')
       }
     } 
-    return Enumerable
+    return window.Enumerable
   }
-  
+
 
   var _isReady = false
 
@@ -81,7 +100,7 @@
   loadCss(csses)
   
   var deps = [
-    {path:'splitstringbyregex.js', cb: function(re){
+    {path:'SplitStringByRegex.js', cb: function(re){
       Ijnjs.SplitStringByRegex = re
     }},
     {path:'ijn-dialog-base.js', cb: function(re){
@@ -103,13 +122,10 @@
 
   function exportModule(){
     if (typeof define === 'function' && define.amd ){
-      console.log(97)
       define('Ijnjs', [], function(){ return Ijnjs })
     } else if ( typeof module !== 'undefined' && module.exports ){
-      console.log(100)
       module.exports = Ijnjs
     } else {
-      console.log(103)
       root.Ijnjs = Ijnjs
     }
   }
@@ -119,7 +135,7 @@
    * @param {{path:string,cb:Action1}[]} deps 
    */
   function loadJsAsync(deps){
-    var srd = '/static/ijnjs/'
+    var srd = getSrd()
     return Enumerable.from(deps).select(a1=>{
       return new Promise(function(res,rej){
         $.ajax({
@@ -160,13 +176,20 @@
    * @param {string[]} csses 例 'ijn-dialog-base.css' 相對於這個 /static/ijnjs/ 這個位置
    */
   function loadCss(csses){
-    var srd = '/static/ijnjs/'
+    var srd = getSrd()
     Enumerable.from(csses).forEach(a1=>{
-      $('<link/>',{
-        rel: 'stylesheet',
-        type: 'text/css',
-        href:  srd + a1
-      }).appendTo('head')
+      $.ajax({
+        url: srd + a1,
+        dataType: 'text',
+        success: function(strCode){
+          // console.log(strCode)
+          
+          var r1 = $('<style></style>')
+          r1.html(strCode)
+          $('head').append(r1)
+        
+        }
+      })
     })
   }
   function waitThenSetReadyAsync(ajaxs){
