@@ -109,7 +109,7 @@ declare namespace Ijnjs {
        * @param path 
        * @param ext .mov 包含. , 若 undefined, 則移除 (同等於 getFileNameWithoutExtension)
        */
-      export function changeExtension(path:string,ext:string?): string
+      export function changeExtension(path:string,ext?:string): string
   }
 }
 export = Ijnjs
