@@ -1,45 +1,15 @@
-/// <reference path="../../jsdoc/jquery.js" />
-/// <reference path="../../jsdoc/linq.d.ts" />
+/// <reference path="../jsdoc/jquery.js" />
+/// <reference path="../jsdoc/linq.d.ts" />
 /// <reference path="SplitStringByRegex.js" />
 
 (function(root,undefined){
-  /** @class */
-  var Enumerable = getLinqEnumerable()
-
-  // https://raw.githubusercontent.com/snowray712000/ijnjs/main/ijn-dialog-base.js
-  // https://raw.githubusercontent.com/snowray712000/ijnjs/main/ijn-dialog-base.css
-  // https://raw.githubusercontent.com/snowray712000/ijnjs/main/bible-version-dialog-picker.js
-  // https://raw.githubusercontent.com/snowray712000/ijnjs/main/SplitStringByRegex.js
-  function getSrd(){
-    if ( /127.0.0.1/i.test(location.host) ){
-      return '/static/ijnjs/'
-      return 'https://raw.githubusercontent.com/snowray712000/ijnjs/main/' // 也可以
-    }
-    if ( /localhost/i.test(location.host) ){
-      return 'https://raw.githubusercontent.com/snowray712000/ijnjs/main/'
-      // return 'http://127.0.0.1:5500/static/ijnjs/'
-    }
-
-    return '/NUI/static/ijnjs/'
-  }
-  /**
-   * @returns {Enumerable}
-   */
-  function getLinqEnumerable(){
-    if ( typeof Enumerable === 'undefined' ){
-      if ( typeof require === 'function' ){
-        return require('linq')
-      }
-    } 
-    return window.Enumerable
-  }
-
-
-  var _isReady = false
+  // 因為下面會寫到，所以要先確保可以用 (.ts 專案會不行)
+  // var Enumerable = getLinqEnumerable()
 
   /** @class */
   var Ijnjs = function(){}
   
+  var _isReady = false
   Ijnjs.isReady = () => _isReady != false 
 
   /**
@@ -103,6 +73,9 @@
     {path:'SplitStringByRegex.js', cb: function(re){
       Ijnjs.SplitStringByRegex = re
     }},
+    {path:'path.js', cb: function(re){
+      Ijnjs.Path = re
+    }},
     {path:'ijn-dialog-base.js', cb: function(re){
       Ijnjs.DialogBase = re
     }},
@@ -110,11 +83,9 @@
       Ijnjs.BibleVersionDialog = re
     }},
   ]
+
   var ajaxs = loadJsAsync(deps)
   waitThenSetReadyAsync(ajaxs)
- 
-
-
   
   exportModule()
 
@@ -135,63 +106,71 @@
    * @param {{path:string,cb:Action1}[]} deps 
    */
   function loadJsAsync(deps){
-    var srd = getSrd()
-    return Enumerable.from(deps).select(a1=>{
-      return new Promise(function(res,rej){
-        $.ajax({
-          url: srd + a1.path,
-          dataType: 'text',    
-          success: function(strCode){
-            execAsync( result =>{
-              a1.cb( result )
-              res()
-            })
+    var srd = getServerRootDirectory() // '/ijnjs/' 上線後 '/NUI/ijnjs/'
+    return Enumerable.from(deps).select(generateOnePromise).toArray()
+      /**
+       * @param {{path:string,cb:Action}} a1 
+       * @returns {Promise}
+       */
+      function generateOnePromise(a1) {
+        return new Promise(fnPromise)
+        function fnPromise(resolve,reject){
+          $.ajax({
+            url: srd + a1.path,
+            dataType: 'text',    
+            success: success
+          })
+          return // return fnPromise
+          function success(strCode){
+            // step1
+            var re = {}
+            evalExec()
+  
+            // step2 等待
+            Ijnjs.testThenDo(()=>{
+              // step3 最後一步, 設定給 Ijnjs, 完成 Promise
+              a1.cb( getResult() )
+              resolve()
+            }, lib => isOkay())
             return // success return 
-            
-            /**
-             * @param {Action1} cbResultReady 
-             */
-            function execAsync(cbResultReady){
-              var re = {}
+            function evalExec(){
               var fn = function(){ eval(strCode) }
               fn.call(re)
-  
-              // 有些會是 async 才設定 
-              // 因為在等待其它先好, 例如 bible-version-dialog-picker 就要先等 ijn-dialog-base
-              Ijnjs.testThenDo( () => {
-                  var re2 = re[Object.keys(re)[0]]
-                  cbResultReady(re2)
-                },js => {
-                  return Object.keys(re).length !== 0
-                }
-              )
             }
-          }})
-        })
-        
-      }).toArray()
-  }
+            function isOkay(){
+              return Object.keys(re).length != 0
+              // 例如 bible-version-dialog-picker 就要先等 ijn-dialog-base
+            }
+            function getResult(){
+              return re[Object.keys(re)[0]]
+            }
+          } 
+        } // fnPromise
+      } // generateOnePromse
+    }// loadJsAsync
   /**
    * 
    * @param {string[]} csses 例 'ijn-dialog-base.css' 相對於這個 /static/ijnjs/ 這個位置
    */
   function loadCss(csses){
-    var srd = getSrd()
+    var srd = getServerRootDirectory()
     Enumerable.from(csses).forEach(a1=>{
       $.ajax({
         url: srd + a1,
         dataType: 'text',
-        success: function(strCode){
-          // console.log(strCode)
-          
+        success: cbSuccess
+      })
+      return
+      function cbSuccess(strCode){
+          // 不需要 document ready  
+          // 方法2 (目前方法)
           var r1 = $('<style></style>')
           r1.html(strCode)
           $('head').append(r1)
-        
-        }
-      })
+      }
     })
   }
+
   function waitThenSetReadyAsync(ajaxs){
     Promise.all(ajaxs).then(()=>{
       chk()
@@ -204,6 +183,30 @@
         Ijnjs.assert( r2 )
       }
     })
+  }
+
+  function getLinqEnumerable(){
+    if ( typeof Enumerable === 'undefined' ){
+      if ( typeof require === 'function' ){
+        return require('linq')
+      }
+    } 
+    return window.Enumerable
+  }
+  function getServerRootDirectory(){
+    if (isNUIDev()) { return dirNUIDev() }
+    if (isRWDDev()) { return dirGit() }
+    return dirServer()
+
+    function isNUIDev(){return location.port == 5500}
+    function isRWDDev(){return location.port == 4200}
+    function dirServer(){return '/NUI/ijnjs/'}
+    function dirNUIDev(){return '/ijnjs/'}
+    function dirGit(){
+      // https://raw.githubusercontent.com/snowray712000/ijnjs/main/ijn-dialog-base.js
+      // https://raw.githubusercontent.com/snowray712000/ijnjs/main/ijn-dialog-base.css
+      return 'https://raw.githubusercontent.com/snowray712000/ijnjs/main/'
+    }
   }
 })(this)
 
@@ -240,3 +243,17 @@
    * @param {any} a2
    * @param {any} a3
    */
+
+/**
+ * Enumerable
+ * @namespace Enumerable
+ */
+/**
+ * Ijnjs
+ * @namespace Ijnjs
+ */
+/**
+ * isReady
+ * @function isReady
+ * @memberof Ijnjs
+ */

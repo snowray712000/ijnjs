@@ -1,6 +1,6 @@
-/// <reference path="../../jsdoc/jquery.js" />
-/// <reference path="../../jsdoc/linq.d.ts" />
-/// <reference path="ijnjs.js" />
+/// <reference path="../jsdoc/jquery.js" />
+/// <reference path="../jsdoc/linq.d.ts" />
+/// <reference path="ijnjs.d.ts" />
 /// <reference path="ijn-dialog-base.js" />
 /**
  * @file 這是開發 聖經版本 選擇所作的, 這裡的函式要搭配 ijn-dialog-base.js 而作的 callback 函式
@@ -17,8 +17,8 @@
 
   Ijnjs.testThenDo( () => {
     root.exportsijn = BibleVersionDialog
-  }, a1 => {
-    return typeof a1.DialogBase !== 'undefined' 
+  }, exports => {
+    return typeof exports.DialogBase !== 'undefined' 
   })
 
   return 
@@ -638,6 +638,10 @@ function ChineseBook() {
 }
 }
 
+})(this)
+
+
+
 /**
  * This callback is when dialog closed be called
  * @callback WhenClosedCallback
@@ -648,8 +652,3 @@ function ChineseBook() {
  * This callback is when dialog closed be called
  * @callback FnAction
  */
-
-})(this)
-
-
-

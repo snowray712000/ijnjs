@@ -1,4 +1,4 @@
-/// <reference path="../../jsdoc/jquery.js" />
+/// <reference path="../jsdoc/jquery.js" />
 (function(root,undefined){
 
   root.exportsijn = DialogBase
