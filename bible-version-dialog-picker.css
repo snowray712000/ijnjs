@@ -32,4 +32,5 @@
 
  .selecteds{
    color: red;
+   min-height: 2.75rem;
  }

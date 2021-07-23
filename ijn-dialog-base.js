@@ -56,6 +56,7 @@
     var newElems = $('<div id="'+id+'" class="ijn-dialog-gray">\
       <div class="ijn-dialog-white">\
         <div class="ijn-dialog-close"></div>\
+        <div class="ijn-dialog-help">說明: Esc鍵、Space鍵、點擊紅色皆可關閉</div>\
         <div class="ijn-customer">\
         </div>\
       </div>\

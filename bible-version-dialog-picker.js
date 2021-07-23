@@ -525,7 +525,23 @@ function ChineseBook() {
     {na:'mormil',cna:'神天聖書',yr:1823,cds:['pr','yr1850','ccht']},
     {na:'marwb',cna:'馬殊曼譯本',yr:1822,cds:['pr','yr1850','ccht']},
     {na:'basset',cna:'白日昇徐約翰文理譯本',yr:1707,cds:['pr','yr1800',"ccht"]},
+    {na:'cmxuhsb',cna:'徐匯官話新譯福音',yr:1948,cds:['pr','yr1960',"officer"]},
+    {na:'cwangdmm',cna:'王多默聖史宗徒行實',yr:1875,cds:['pr','yr1919',"ccht"]},
+    {na:'cwhsiaosb',cna:'蕭舜華官話',yr:1949,cds:['pr','yr1960',"officer"]},
+    {na:'cwmgbm',cna:'四人小組譯本',yr:1837,cds:['pr','1837',"ccht"]},
+    {na:'cwfaubsb',cna:'聖保祿書翰並數位宗徒涵牘',yr:0,cds:['cc']},
+    {na:'cwjdsb',cna:'德如瑟四史聖經譯註',yr:0,cds:['cc']},
+    {na:'cwkfag',cna:'郭實臘新遺詔書和舊遺詔聖書',yr:1838,cds:['pr','yr1850',"ccht"]},
+    {na:'cwliwysb',cna:'宗徒大事錄和新經譯義',yr:1875,cds:['pr','yr1919',"ccht"]},
+    {na:'cwmxb',cna:'馬相伯救世福音',yr:1937,cds:['pr','yr1919',"ccht"]},
+    {na:'cwont',cna:'俄羅斯正教新遺詔聖經',yr:0,cds:['ro']},
+    {na:'cwplbsb',cna:'卜士傑新經公函與默示錄',yr:0,cds:['cc']},
+    {na:'cwtaiping',cna:'太平天國文理譯本',yr:1853,cds:['pr','yr1919',"ccht"]},
+    {na:'cwwuchsb',cna:'吳經熊新經全集聖詠譯義',yr:1946,cds:['pr','yr1960',"ccht"]},
+    {na:'cxubinwsb',cna:'許彬文四史全編',yr:1899,cds:['pr','yr1919',"ccht"]},
+    {na:'cogorw',cna:'高連茨基聖詠經',yr:0,cds:['ro']},
   ]
+
   /**
    * <div class="group ch"></div>
    * <span class="book-item" data-item={na,cna,yr}>和合本</span>

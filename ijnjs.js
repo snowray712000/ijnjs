@@ -4,7 +4,7 @@
 
 (function(root,undefined){
   // 因為下面會寫到，所以要先確保可以用 (.ts 專案會不行)
-  // var Enumerable = getLinqEnumerable()
+  var Enumerable = getLinqEnumerable()
 
   /** @class */
   var Ijnjs = function(){}
